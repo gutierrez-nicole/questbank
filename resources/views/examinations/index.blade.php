@@ -1,0 +1,7 @@
+@extends('layouts.app', ['title' => 'Examination Management'])
+@section('content')
+<div class="d-flex justify-content-between align-items-center mb-3"><h1 class="h4 mb-0">Examinations</h1><a class="btn btn-success" href="{{ route('examinations.create') }}">Create Examination</a></div>
+<div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Title</th><th>Subject</th><th>Duration</th><th>Schedule</th><th>Passing</th><th>Status</th><th class="text-end">Actions</th></tr></thead><tbody>
+@foreach($examinations as $exam)<tr><td>{{ $exam->title }}</td><td>{{ $exam->subject?->name }}</td><td>{{ $exam->duration_minutes }} mins</td><td>{{ $exam->scheduled_at?->format('M d, Y h:i A') }}</td><td>{{ $exam->passing_score }}%</td><td><span class="badge text-bg-info">{{ ucfirst($exam->status) }}</span></td><td class="text-end"><a class="btn btn-sm btn-outline-secondary" href="{{ route('examinations.show',$exam) }}">View</a> <a class="btn btn-sm btn-outline-primary" href="{{ route('examinations.edit',$exam) }}">Edit</a> <form class="d-inline" method="POST" action="{{ route('examinations.destroy',$exam) }}">@csrf @method('DELETE')<button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this examination?')">Delete</button></form></td></tr>@endforeach
+</tbody></table></div></div><div class="mt-3">{{ $examinations->links() }}</div>
+@endsection

@@ -1,0 +1,4 @@
+@extends('layouts.app', ['title' => 'Exam Result'])
+@section('content')
+<div class="card border-0 shadow-sm"><div class="card-body"><h1 class="h4">{{ $result->examination->title }}</h1><dl class="row"><dt class="col-sm-3">Student</dt><dd class="col-sm-9">{{ $result->student->full_name }}</dd><dt class="col-sm-3">Subject</dt><dd class="col-sm-9">{{ $result->examination->subject->name }}</dd><dt class="col-sm-3">Score</dt><dd class="col-sm-9">{{ $result->score }} / {{ $result->total_points }}</dd><dt class="col-sm-3">Percentage</dt><dd class="col-sm-9">{{ $result->percentage }}%</dd><dt class="col-sm-3">Status</dt><dd class="col-sm-9">{{ ucfirst($result->status) }}</dd><dt class="col-sm-3">Submitted</dt><dd class="col-sm-9">{{ $result->submitted_at?->format('M d, Y h:i A') }}</dd></dl></div><div class="card-footer bg-white"><a class="btn btn-outline-secondary" href="{{ route('results.index') }}">Back</a></div></div>
+@endsection

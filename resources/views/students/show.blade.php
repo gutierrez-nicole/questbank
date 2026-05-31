@@ -1,0 +1,4 @@
+@extends('layouts.app', ['title' => 'Student Information'])
+@section('content')
+<div class="card border-0 shadow-sm"><div class="card-body"><h1 class="h4">{{ $student->full_name }}</h1><dl class="row mb-0"><dt class="col-sm-3">Student Number</dt><dd class="col-sm-9">{{ $student->student_number }}</dd><dt class="col-sm-3">Program</dt><dd class="col-sm-9">{{ $student->program }}</dd><dt class="col-sm-3">Email</dt><dd class="col-sm-9">{{ $student->email }}</dd><dt class="col-sm-3">Year and Section</dt><dd class="col-sm-9">{{ $student->year_level }} {{ $student->section }}</dd><dt class="col-sm-3">Contact</dt><dd class="col-sm-9">{{ $student->contact_number }}</dd><dt class="col-sm-3">Address</dt><dd class="col-sm-9">{{ $student->address }}</dd></dl></div><div class="card-footer bg-white"><a class="btn btn-outline-secondary" href="{{ route('students.index') }}">Back</a></div></div>
+@endsection

@@ -1,0 +1,7 @@
+@extends('layouts.app', ['title' => 'Results'])
+@section('content')
+<div class="d-flex justify-content-between align-items-center mb-3"><h1 class="h4 mb-0">Exam Results</h1>@unless(auth()->user()->isRole('student'))<a class="btn btn-success" href="{{ route('results.create') }}">Record Result</a>@endunless</div>
+<div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Student</th><th>Examination</th><th>Subject</th><th>Score</th><th>Percentage</th><th>Status</th><th class="text-end">Actions</th></tr></thead><tbody>
+@foreach($results as $result)<tr><td>{{ $result->student?->full_name }}</td><td>{{ $result->examination?->title }}</td><td>{{ $result->examination?->subject?->name }}</td><td>{{ $result->score }}/{{ $result->total_points }}</td><td>{{ $result->percentage }}%</td><td><span class="badge text-bg-secondary">{{ ucfirst($result->status) }}</span></td><td class="text-end"><a class="btn btn-sm btn-outline-secondary" href="{{ route('results.show',$result) }}">View</a> @unless(auth()->user()->isRole('student'))<a class="btn btn-sm btn-outline-primary" href="{{ route('results.edit',$result) }}">Edit</a> <form class="d-inline" method="POST" action="{{ route('results.destroy',$result) }}">@csrf @method('DELETE')<button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this result?')">Delete</button></form>@endunless</td></tr>@endforeach
+</tbody></table></div></div><div class="mt-3">{{ $results->links() }}</div>
+@endsection
