@@ -1,8 +1,19 @@
 @extends('layouts.app', ['title' => 'User Profile'])
 @section('content')
+<div class="{{ auth()->user()->isRole('student') ? 'student-page' : '' }}">
+@if(auth()->user()->isRole('student'))
+    <div class="student-page-head">
+        <div>
+            <div class="student-eyebrow">Student Portal</div>
+            <h1 class="student-page-title">Edit Own <em>Profile</em></h1>
+            <p class="student-page-sub">Update your account details and password.</p>
+        </div>
+        <div class="student-chip"><i class="ti ti-user-edit" aria-hidden="true"></i>{{ $user->role?->display_name }}</div>
+    </div>
+@endif
 <div class="row g-3">
     <div class="col-lg-6">
-        <form method="POST" action="{{ route('profile.update') }}" class="card border-0 shadow-sm">@csrf @method('PUT')
+        <form method="POST" action="{{ route('profile.update') }}" class="card border-0 shadow-sm {{ auth()->user()->isRole('student') ? 'student-form-card' : '' }}">@csrf @method('PUT')
             <div class="card-header bg-white fw-semibold">Profile Information</div>
             <div class="card-body d-grid gap-3">
                 <div><label class="form-label">Full Name</label><input class="form-control" name="name" value="{{ old('name',$user->name) }}" required></div>
@@ -13,7 +24,7 @@
         </form>
     </div>
     <div class="col-lg-6">
-        <form method="POST" action="{{ route('profile.password') }}" class="card border-0 shadow-sm">@csrf @method('PUT')
+        <form method="POST" action="{{ route('profile.password') }}" class="card border-0 shadow-sm {{ auth()->user()->isRole('student') ? 'student-form-card' : '' }}">@csrf @method('PUT')
             <div class="card-header bg-white fw-semibold">Change Password</div>
             <div class="card-body d-grid gap-3">
                 <div><label class="form-label">Current Password</label><input class="form-control" type="password" name="current_password" required></div>
@@ -23,5 +34,6 @@
             <div class="card-footer bg-white"><button class="btn btn-success">Change Password</button></div>
         </form>
     </div>
+</div>
 </div>
 @endsection

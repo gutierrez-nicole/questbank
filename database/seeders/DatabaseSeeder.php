@@ -23,9 +23,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $adminRole = Role::firstOrCreate(['name' => 'admin'], ['display_name' => 'Admin']);
-        $instructorRole = Role::firstOrCreate(['name' => 'instructor'], ['display_name' => 'Instructor']);
-        $studentRole = Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
+        $adminRole = Role::updateOrCreate(['name' => 'admin'], ['display_name' => 'Administrator']);
+        $instructorRole = Role::updateOrCreate(['name' => 'instructor'], ['display_name' => 'Instructor']);
+        $studentRole = Role::updateOrCreate(['name' => 'student'], ['display_name' => 'Student']);
 
         User::firstOrCreate(['email' => 'admin@questbank.test'], [
             'role_id' => $adminRole->id,
@@ -56,13 +56,14 @@ class DatabaseSeeder extends Seeder
             'full_name' => $instructorUser->name,
             'email' => $instructorUser->email,
             'department' => 'Civil Engineering',
+            'position' => 'Lecturer',
         ]);
 
         $student = Student::firstOrCreate(['student_number' => 'STU-00001'], [
             'user_id' => $studentUser->id,
             'full_name' => $studentUser->name,
             'email' => $studentUser->email,
-            'program' => 'Civil Engineering',
+            'program' => 'Bachelor of Science in Civil Engineering (BSCE)',
             'year_level' => '3rd Year',
             'section' => 'CE-3A',
         ]);

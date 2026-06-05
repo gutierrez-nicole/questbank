@@ -57,16 +57,37 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $data = $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'username' => ['required', 'alpha_dash', 'max:100', 'unique:users,username'],
             'password' => ['required', 'confirmed', 'min:8'],
             'role_id' => ['required', Rule::exists('roles', 'id')],
-        ]);
+        ];
+
+        $role = Role::find($request->input('role_id'));
+
+        if ($role?->name === 'student') {
+            $rules += [
+                'student_number' => ['required', 'max:50', Rule::unique('students', 'student_number')],
+                'year_level' => ['required', 'max:50'],
+                'section' => ['required', 'max:50'],
+                'program' => ['required', 'in:Bachelor of Science in Civil Engineering (BSCE)'],
+            ];
+        }
+
+        if ($role?->name === 'instructor') {
+            $rules += [
+                'employee_number' => ['required', 'max:50', Rule::unique('instructors', 'employee_number')],
+                'department' => ['required', 'max:255'],
+                'position' => ['required', 'max:255'],
+            ];
+        }
+
+        $data = $request->validate($rules);
 
         $user = User::create($data);
-        $this->syncRoleProfile($user);
+        $this->syncRoleProfile($user, $data);
         Auth::login($user);
         $request->session()->regenerate();
 
@@ -96,27 +117,31 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 
-    private function syncRoleProfile(User $user): void
+    private function syncRoleProfile(User $user, array $data = []): void
     {
         if ($user->isRole('student')) {
-            Student::firstOrCreate(
+            Student::updateOrCreate(
                 ['user_id' => $user->id],
                 [
-                    'student_number' => 'STU-'.str_pad((string) $user->id, 5, '0', STR_PAD_LEFT),
+                    'student_number' => $data['student_number'] ?? 'STU-'.str_pad((string) $user->id, 5, '0', STR_PAD_LEFT),
                     'full_name' => $user->name,
                     'email' => $user->email,
-                    'program' => 'Civil Engineering',
+                    'program' => $data['program'] ?? 'Bachelor of Science in Civil Engineering (BSCE)',
+                    'year_level' => $data['year_level'] ?? null,
+                    'section' => $data['section'] ?? null,
                 ]
             );
         }
 
         if ($user->isRole('instructor')) {
-            Instructor::firstOrCreate(
+            Instructor::updateOrCreate(
                 ['user_id' => $user->id],
                 [
-                    'employee_number' => 'INS-'.str_pad((string) $user->id, 5, '0', STR_PAD_LEFT),
+                    'employee_number' => $data['employee_number'] ?? 'INS-'.str_pad((string) $user->id, 5, '0', STR_PAD_LEFT),
                     'full_name' => $user->name,
                     'email' => $user->email,
+                    'department' => $data['department'] ?? 'Civil Engineering',
+                    'position' => $data['position'] ?? null,
                 ]
             );
         }
@@ -127,9 +152,9 @@ class AuthController extends Controller
         foreach ([
             'student' => 'Student',
             'instructor' => 'Instructor',
-            'admin' => 'Admin',
+            'admin' => 'Administrator',
         ] as $name => $displayName) {
-            Role::firstOrCreate(['name' => $name], ['display_name' => $displayName]);
+            Role::updateOrCreate(['name' => $name], ['display_name' => $displayName]);
         }
 
         return Role::orderBy('display_name')->get();

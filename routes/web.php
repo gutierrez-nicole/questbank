@@ -34,11 +34,19 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::resource('accounts', AccountController::class)->except(['show', 'destroy']);
     Route::patch('accounts/{account}/toggle', [AccountController::class, 'toggle'])->name('accounts.toggle');
 
-    Route::resource('students', StudentController::class);
-    Route::resource('instructors', InstructorController::class);
-    Route::resource('subjects', SubjectController::class)->except(['show']);
-    Route::resource('examinations', ExaminationController::class);
-    Route::resource('questions', QuestionController::class)->except(['show']);
-    Route::resource('results', ResultController::class);
-    Route::get('reports/performance', [PerformanceReportController::class, 'index'])->name('reports.performance');
+    Route::resource('examinations', ExaminationController::class)->only(['index', 'show']);
+    Route::resource('results', ResultController::class)->only(['index', 'show']);
+
+    Route::middleware('role:admin,instructor')->group(function () {
+        Route::resource('examinations', ExaminationController::class)->except(['index', 'show']);
+        Route::resource('questions', QuestionController::class)->except(['show']);
+        Route::resource('results', ResultController::class)->except(['index', 'show']);
+        Route::get('reports/performance', [PerformanceReportController::class, 'index'])->name('reports.performance');
+    });
+
+    Route::middleware('role:admin')->group(function () {
+        Route::resource('students', StudentController::class);
+        Route::resource('instructors', InstructorController::class);
+        Route::resource('subjects', SubjectController::class)->except(['show']);
+    });
 });

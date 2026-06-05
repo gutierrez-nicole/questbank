@@ -12,6 +12,7 @@ class Instructor extends Model
         'full_name',
         'email',
         'department',
+        'position',
         'contact_number',
     ];
 
